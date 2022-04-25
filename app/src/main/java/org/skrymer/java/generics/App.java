@@ -29,18 +29,48 @@ public class App {
         // System.out.println(bList.get(1));
 
         // List<? extends T>
+        // var bList = new ArrayList<B>();
+        // List<? extends A> aList = bList; // ok as bList contains B which extends A
+        // // bList.add(new A()); not possible as the original list contains B's    
+        // bList.add(new B()); // ok to add B here as the original reference is still in scope, the compiler knows it's a list of B's
+        // var cList = new ArrayList<C>(); // ok as the C extends B
+        // addToList(cList);
+
+        // List<? super T>
         var bList = new ArrayList<B>();
-        List<? extends A> aList = bList;
-        // List<? extends C> cList = bList;
-        // bList.add(new A()); -- not possible as the original list contains B's    
-        bList.add(new B()); // ok to add B here as the original reference is still in scope
-        addToList(bList);
+        List<? super B> someList = bList;
+        // not possible as the original list contains B's    
+        // bList.add(new A()); 
+        someList.add(new B());
+        someList.add(new C());
+        addToList2(someList);
+        
+        var aList = new ArrayList<A>();
+        addToList2(aList);
+        
+        // cant add as C is not a parrent of B
+        // var cList = new ArrayList<C>();        
+        // addToList2(cList);
     }
 
     public static void addToList(List<? extends B> list){
-        // list.add(new B()); -- not possible as the original reference is no longer in scope
+        // -- not possible as the original reference is no longer in scope
+        // for instance we could pass in a list of C 
+        // list.add(new B()); 
+
+        // ok to read from the list, but not add
+        for(B b : list){
+            System.out.println(b);
+        }
     }
 
-
-    
+    public static void addToList2(List<? super B> list){
+        // ok to add as the list contains a B or children of B
+        list.add(new B()); 
+        list.add(new C());
+        // safe to reference Object as nothing extends Object - we know it's an Object
+        for(Object b : list){
+            System.out.println(b);
+        }
+    }    
 }
