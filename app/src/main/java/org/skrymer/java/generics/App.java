@@ -51,7 +51,7 @@ public class App {
     static void exampleTwo(){
         System.out.println("Example two --------");
         var bList = new ArrayList<B>();
-        // A list of objects extending B
+        // List of objects extending B
         List<? extends B> someList = bList;
         // not allowed as the compiler does not know what is in the original list - could be a list of C objects 
         // someList.add(new B());
@@ -71,14 +71,16 @@ public class App {
         var aList = new ArrayList<B>();
         List<? super B> someList = aList;
         someList.add(new B()); 
+        
         // not allowed as we could the list contains at least B objects
         // someList.add(new A()); 
+        
         // C is ok as is a B
         someList.add(new C());
     }
 
     /**
-     * Here we use <? extends B> to comunicate that the list parameter is contains B's or children of B
+     * Use <? extends B> to comunicate that the list parameter contains B's or children of B
      * @param list
      */
     static void addToListExtends(List<? extends B> list){
@@ -92,7 +94,7 @@ public class App {
     }
 
     /**
-     * Here we use <? super B> to comunicate that the list parameter is contains B's or parents of B
+     * Use <? super B> to comunicate that the list parameter contains B's or parents of B
      * @param list
      */
     static void addToListSuper(List<? super B> list){
