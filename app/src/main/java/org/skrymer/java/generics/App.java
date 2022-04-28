@@ -9,6 +9,16 @@ import java.util.List;
 public class App {
 
     public static void main(String[] args) {
+        theProblem();
+        exampleOne();
+        exampleTwo();
+        exampleThree();        
+    }
+
+    /**
+     * Neglecting to use generics can/will leave to issues at runtime
+     */
+    static void theProblem() {
         var dogTrainer = new DogTrainer();
         var unsafeDogs = new ArrayList();
         unsafeDogs.add(new Dog());
@@ -18,57 +28,83 @@ public class App {
         var safeDogs = new ArrayList<Dog>();
         safeDogs.add(new Dog());
         // safeDogs.add(new Cat()); - will fail at compile time
-        dogTrainer.safeTrain(safeDogs);
-
-        // List<T>
-        // var bList = new ArrayList<B>();
-        // // bList.add(new A()); - not allowed to add A as not a B
-        // bList.add(new B());
-        // bList.add(new C()); // - ok as C is a B
-        // System.out.println(bList.get(0));
-        // System.out.println(bList.get(1));
-
-        // List<? extends T>
-        // var bList = new ArrayList<B>();
-        // List<? extends A> aList = bList; // ok as bList contains B which extends A
-        // // bList.add(new A()); not possible as the original list contains B's    
-        // bList.add(new B()); // ok to add B here as the original reference is still in scope, the compiler knows it's a list of B's
-        // var cList = new ArrayList<C>(); // ok as the C extends B
-        // addToList(cList);
-
-        // List<? super T>
-        var bList = new ArrayList<B>();
-        List<? super B> someList = bList;
-        // not possible as the original list contains B's    
-        // bList.add(new A()); 
-        someList.add(new B());
-        someList.add(new C());
-        addToList2(someList);
-        
-        var aList = new ArrayList<A>();
-        addToList2(aList);
-        
-        // cant add as C is not a parrent of B
-        // var cList = new ArrayList<C>();        
-        // addToList2(cList);
+        dogTrainer.safeTrain(safeDogs);        
     }
 
-    public static void addToList(List<? extends B> list){
-        // -- not possible as the original reference is no longer in scope
-        // for instance we could pass in a list of C 
+        
+    /**
+    * List<T>
+    */
+    static void exampleOne(){
+        System.out.println("Example one --------");
+        // List of B objects
+        var bList = new ArrayList<B>();        
+        // bList.add(new A()); not possible as the original list contains B's    
+        bList.add(new B()); // ok to add B as we have a list of B's...
+        bList.add(new C()); // ok as C is a B
+        System.out.println(bList.get(0));
+    }
+
+    /**
+     * List<? extends T>
+     */
+    static void exampleTwo(){
+        System.out.println("Example two --------");
+        var bList = new ArrayList<B>();
+        // A list of objects extending B
+        List<? extends B> someList = bList;
+        // not allowed as the compiler does not know what is in the original list - could be a list of C objects 
+        // someList.add(new B());
+        
+        var cList = new ArrayList<C>();
+        List<? extends B> someOtherList = cList;
+        // someOtherList.add(new B());
+        // Cast exception as we just added a B
+        // cList.get(0).cBehaviour();
+    }
+
+    /**
+     * List<? super T>
+     */
+    static void exampleThree(){
+        System.out.println("Example three --------");
+        var aList = new ArrayList<B>();
+        List<? super B> someList = aList;
+        someList.add(new B()); 
+        // not allowed as we could the list contains at least B objects
+        // someList.add(new A()); 
+        // C is ok as is a B
+        someList.add(new C());
+    }
+
+    /**
+     * Here we use <? extends B> to comunicate that the list parameter is contains B's or children of B
+     * @param list
+     */
+    static void addToListExtends(List<? extends B> list){
+        // not allowed as we could pass in a list of C or an children of B - addToListExtends(new ArrayList<C>())
         // list.add(new B()); 
 
-        // ok to read from the list, but not add
-        for(B b : list){
+        // ok as we know that the list contains at least B types 
+        for(A b : list){
             System.out.println(b);
         }
     }
 
-    public static void addToList2(List<? super B> list){
-        // ok to add as the list contains a B or children of B
+    /**
+     * Here we use <? super B> to comunicate that the list parameter is contains B's or parents of B
+     * @param list
+     */
+    static void addToListSuper(List<? super B> list){
+        // not allowed as the list could contain B objects
+        //list.add(new A());
+        // ok 
         list.add(new B()); 
         list.add(new C());
-        // safe to reference Object as nothing extends Object - we know it's an Object
+        
+        // not for(A a : list){} as we might have a list of B's or any child thereof
+        // not for(B b : list){} as we might have a list of A objects        
+        // safe to reference Object as nothing extends Object
         for(Object b : list){
             System.out.println(b);
         }
